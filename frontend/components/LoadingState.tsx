@@ -38,7 +38,7 @@ export default function LoadingState({ batchesDone, totalBatches }: LoadingState
             <span>Batch {batchesDone} of {totalBatches}</span>
             <span>{Math.round((batchesDone! / totalBatches!) * 100)}%</span>
           </div>
-          <div className="h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-emerald-100/60 dark:bg-slate-800 overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500"
               style={{ width: `${(batchesDone! / totalBatches!) * 100}%` }}

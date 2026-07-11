@@ -48,12 +48,38 @@ function statusBadge(status?: string) {
   }
 }
 
+function sourceBadge(source?: string) {
+  const norm = (source ?? '').toLowerCase();
+  switch (norm) {
+    case 'leads_on_demand':
+      return 'bg-teal-55/75 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-150 dark:border-teal-900/60';
+    case 'meridian_tower':
+      return 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-900/60';
+    case 'eden_park':
+      return 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60';
+    case 'varah_swamy':
+      return 'bg-amber-50 dark:bg-amber-955/40 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900/60';
+    case 'sarjapur_plots':
+      return 'bg-blue-50 dark:bg-blue-955/40 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900/60';
+    default:
+      return 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-100 dark:border-slate-700';
+  }
+}
+
 function renderCellContent(field: keyof CrmRecord, val: any) {
   const str = String(val ?? '');
   if (field === 'crm_status' && val) {
     const formatted = str.replace(/_/g, ' ');
     return (
       <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide ${statusBadge(str)}`}>
+        {formatted}
+      </span>
+    );
+  }
+  if (field === 'data_source' && val) {
+    const formatted = str.replace(/_/g, ' ');
+    return (
+      <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide capitalize ${sourceBadge(str)}`}>
         {formatted}
       </span>
     );
@@ -238,13 +264,13 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
       {/* Tab Selectors & Table Container */}
       <div className="border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 rounded-3xl p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-150 dark:border-slate-800 pb-5 mb-5 gap-4">
-          <div className="flex gap-2 rounded-xl bg-slate-100 dark:bg-slate-955 p-1 w-full sm:w-auto">
+          <div className="flex gap-2 rounded-xl bg-slate-100 dark:bg-slate-955 p-1.5 w-full sm:w-auto">
             {parsed.length > 0 && (
               <button
                 onClick={() => setActiveTab('parsed')}
-                className={`flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all w-full sm:w-auto ${
+                className={`flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-lg transition-all w-full sm:w-auto ${
                   activeTab === 'parsed'
-                    ? 'bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm'
+                    ? 'bg-white dark:bg-slate-850 text-emerald-700 dark:text-white shadow-sm border border-emerald-100/60 dark:border-transparent'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                 }`}
               >
@@ -257,9 +283,9 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
             {skipped.length > 0 && (
               <button
                 onClick={() => setActiveTab('skipped')}
-                className={`flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all w-full sm:w-auto ${
+                className={`flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-bold rounded-lg transition-all w-full sm:w-auto ${
                   activeTab === 'skipped'
-                    ? 'bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm'
+                    ? 'bg-white dark:bg-slate-850 text-red-700 dark:text-white shadow-sm border border-red-100/60 dark:border-transparent'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                 }`}
               >

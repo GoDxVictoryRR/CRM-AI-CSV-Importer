@@ -97,11 +97,11 @@ export default function CsvUploader({ onFileSelected }: CsvUploaderProps) {
         onDragLeave={onDragLeave}
         className={`
           relative w-full max-w-xl rounded-3xl border-2 border-dashed p-14 text-center
-          cursor-pointer transition-all duration-300 group shadow-md shadow-slate-100/40 dark:shadow-none
+          cursor-pointer transition-all duration-300 group shadow-md shadow-emerald-500/5 dark:shadow-none
           ${
             isDragging
-              ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 scale-[1.01]'
-              : 'border-slate-250 dark:border-slate-750 bg-gradient-to-tr from-white to-slate-50/50 dark:from-slate-900/60 dark:to-slate-900/40 hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-900/5 dark:hover:bg-slate-900'
+              ? 'border-emerald-555 bg-emerald-50/50 dark:bg-emerald-950/30 scale-[1.01]'
+              : 'border-emerald-200/80 dark:border-slate-750 bg-gradient-to-tr from-white to-emerald-50/15 dark:from-slate-900/60 dark:to-slate-900/40 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/10 dark:hover:bg-slate-900'
           }
         `}
       >
@@ -114,11 +114,11 @@ export default function CsvUploader({ onFileSelected }: CsvUploaderProps) {
           <div
             className={`
               w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300
-              ${isDragging ? 'bg-emerald-100 dark:bg-emerald-500/20' : 'bg-slate-100/80 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-slate-700'}
+              ${isDragging ? 'bg-emerald-100 dark:bg-emerald-500/20' : 'bg-emerald-50/60 dark:bg-slate-800 group-hover:bg-emerald-100/85 dark:group-hover:bg-slate-700'}
             `}
           >
             <UploadCloud
-              className={`h-8 w-8 transition-colors ${isDragging ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-400 group-hover:text-emerald-500'}`}
+              className={`h-8 w-8 transition-colors ${isDragging ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-500 dark:text-slate-450 group-hover:text-emerald-600'}`}
             />
           </div>
 
@@ -128,14 +128,14 @@ export default function CsvUploader({ onFileSelected }: CsvUploaderProps) {
             </p>
             <p className="text-sm text-slate-400 dark:text-slate-500">
               or{' '}
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold hover:text-emerald-500 underline underline-offset-2 cursor-pointer transition-colors">
+              <span className="text-emerald-600 dark:text-emerald-400 font-extrabold hover:text-emerald-500 underline underline-offset-2 cursor-pointer transition-colors">
                 browse files
               </span>
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-600 bg-slate-50 dark:bg-slate-900/60 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-800">
-            <FileText className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-2 text-xs text-emerald-650 dark:text-slate-600 bg-emerald-50/30 dark:bg-slate-900/60 px-3 py-1 rounded-full border border-emerald-100/55 dark:border-slate-800">
+            <FileText className="h-3.5 w-3.5 text-emerald-500" />
             <span>.csv files only · max {MAX_SIZE_MB} MB</span>
           </div>
         </div>
