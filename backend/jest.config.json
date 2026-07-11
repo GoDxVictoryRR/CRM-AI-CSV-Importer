@@ -1,0 +1,22 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "extensionsToTreatAsEsm": [],
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  },
+  "transform": {
+    "^.+\\.tsx?$": ["ts-jest", {
+      "useESM": false,
+      "tsconfig": {
+        "module": "CommonJS",
+        "moduleResolution": "node"
+      }
+    }]
+  },
+  "testMatch": ["**/__tests__/**/*.test.ts"],
+  "collectCoverageFrom": [
+    "src/services/**/*.ts",
+    "!src/services/csvService.ts"
+  ]
+}

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   // Allow Next.js dev server to accept requests from the local network IP
   // (needed when running on Wi-Fi where the browser resolves via 192.168.x.x)
   allowedDevOrigins: [
