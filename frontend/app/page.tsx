@@ -212,16 +212,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-emerald-50/15 via-slate-50 to-emerald-100/20 dark:from-slate-955 dark:dark:via-slate-950 dark:to-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-tr from-emerald-50/15 via-slate-50 to-emerald-100/20 dark:from-slate-950 dark:dark:via-slate-950 dark:to-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
       {/* Background Mesh Glows */}
       <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-teal-500/10 dark:bg-teal-500/5 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Header */}
-      <header className="border-b border-slate-200/80 dark:border-slate-850/80 bg-white/70 dark:bg-slate-950/70 sticky top-0 z-20 backdrop-blur-md shadow-sm transition-colors duration-300">
+      <header className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-slate-950/70 sticky top-0 z-20 backdrop-blur-md shadow-sm transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-550 to-teal-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-emerald-500/20 dark:shadow-emerald-950/50">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-emerald-500/20 dark:shadow-emerald-950/50">
               GE
             </div>
             <div>
@@ -239,11 +239,11 @@ export default function Home() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle visual theme"
-              className="p-2 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white shadow-sm hover:shadow active:scale-[0.96] transition-all"
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white shadow-sm hover:shadow active:scale-[0.96] transition-all"
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <span className="text-xs text-slate-450 dark:text-slate-500 font-semibold bg-slate-100 dark:bg-slate-900 px-3 py-1 rounded-full hidden sm:inline border border-slate-200/60 dark:border-slate-800/60">
+            <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold bg-slate-100 dark:bg-slate-900 px-3 py-1 rounded-full hidden sm:inline border border-slate-200/60 dark:border-slate-800/60">
               v1.0
             </span>
           </div>
@@ -261,14 +261,14 @@ export default function Home() {
               </span>
               <button
                 onClick={() => setErrorDetails(null)}
-                className="text-red-500 hover:text-red-750 dark:hover:text-red-300 text-xs font-bold transition-colors"
+                className="text-red-500 hover:text-red-700 dark:hover:text-red-350 text-xs font-bold transition-colors"
               >
                 Dismiss
               </button>
             </div>
-            <p className="mt-2 font-semibold text-slate-850 dark:text-red-200">{errorDetails.message}</p>
+            <p className="mt-2 font-semibold text-slate-800 dark:text-red-200">{errorDetails.message}</p>
             {errorDetails.actionableHint && (
-              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 border-t border-red-250/20 dark:border-red-500/10 pt-2.5 italic">
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 border-t border-red-200/20 dark:border-red-500/10 pt-2.5 italic">
                 Recommendation: {errorDetails.actionableHint}
               </p>
             )}
@@ -277,12 +277,12 @@ export default function Home() {
 
         {/* State 1: Loading (AI Processing) with Batch Progress */}
         {isLoading && !parsedCsv ? (
-          <div className="rounded-3xl border border-slate-200 dark:border-slate-850 bg-white/60 dark:bg-slate-900/10 backdrop-blur-md p-10 shadow-sm transition-all duration-300">
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/10 backdrop-blur-md p-10 shadow-sm transition-all duration-300">
             <LoadingState batchesDone={batchesDone} totalBatches={batchesTotal} />
           </div>
         ) : importResult ? (
           /* State 2: Import Completed (Results display) */
-          <div className="rounded-3xl border border-slate-200 dark:border-slate-850 bg-white/40 dark:bg-slate-900/10 p-10 shadow-sm transition-all duration-300">
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/10 p-10 shadow-sm transition-all duration-300">
             <ResultsTable result={importResult} onReset={handleReset} onRetrySkipped={handleRetrySkipped} />
           </div>
         ) : parsedCsv ? (
@@ -291,12 +291,12 @@ export default function Home() {
             <div className="flex justify-between items-center flex-wrap gap-2">
               <button
                 onClick={handleReset}
-                className="text-xs text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-white flex items-center gap-1.5 transition-colors font-bold"
+                className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center gap-1.5 transition-colors font-bold"
               >
                 ← Back to Upload
               </button>
             </div>
-            <div className="rounded-3xl border border-slate-200 dark:border-slate-850 bg-white/40 dark:bg-slate-900/10 backdrop-blur-md p-6 shadow-sm">
+            <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/10 backdrop-blur-md p-6 shadow-sm">
               <CsvPreviewTable data={parsedCsv} />
               <ConfirmImportBar
                 rowCount={parsedCsv.totalRows}
@@ -314,7 +314,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="border-t border-slate-200 dark:border-slate-850 py-6 text-center text-xs text-slate-400 dark:text-slate-655 bg-white/40 dark:bg-slate-950/40 backdrop-blur transition-colors">
+      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-400 dark:text-slate-500 bg-white/40 dark:bg-slate-950/40 backdrop-blur transition-colors">
         <p>© 2026 GrowEasy CRM. All rights reserved.</p>
       </footer>
     </div>

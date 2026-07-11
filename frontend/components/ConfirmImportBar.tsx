@@ -22,13 +22,13 @@ export default function ConfirmImportBar({
   return (
     <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-6 py-5 flex items-center justify-between gap-4 flex-wrap shadow-md shadow-slate-100/80 dark:shadow-none">
       <div>
-        <p className="text-base font-bold text-slate-850 dark:text-white">
+        <p className="text-base font-bold text-slate-800 dark:text-white">
           Ready to import{' '}
           <span className="text-emerald-600 dark:text-emerald-400 font-extrabold underline decoration-emerald-500/30 decoration-2 underline-offset-4">
             {rowCount.toLocaleString()} row{rowCount !== 1 ? 's' : ''}
           </span>
         </p>
-        <p className="text-xs text-slate-450 dark:text-slate-400 mt-1 font-semibold leading-relaxed">
+        <p className="text-xs text-slate-400 dark:text-slate-450 mt-1 font-semibold leading-relaxed">
           AI will map your columns to GrowEasy CRM fields automatically.
         </p>
       </div>
@@ -44,7 +44,7 @@ export default function ConfirmImportBar({
           ${
             isDisabled || isLoading
               ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
-              : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-450 hover:to-teal-450 shadow-md shadow-emerald-500/20 dark:shadow-emerald-900/40 hover:shadow-lg hover:shadow-emerald-500/30'
+              : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-md shadow-emerald-500/20 dark:shadow-emerald-900/40 hover:shadow-lg hover:shadow-emerald-500/30'
           }
         `}
       >

@@ -23,7 +23,7 @@ export default function CsvPreviewTable({ data }: CsvPreviewTableProps) {
     return (
       <div
         style={style}
-        className="flex items-center divide-x divide-slate-100 dark:divide-slate-800/80 border-b border-slate-150 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+        className="flex items-center divide-x divide-slate-100 dark:divide-slate-800/80 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
       >
         <div
           style={{ width: INDEX_WIDTH }}
@@ -58,7 +58,7 @@ export default function CsvPreviewTable({ data }: CsvPreviewTableProps) {
               {fileName}
             </span>
           </h2>
-          <p className="text-xs text-slate-450 dark:text-slate-500 mt-1 font-semibold">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-semibold">
             {totalRows.toLocaleString()} rows · {headers.length} columns · Virtualized viewport enabled
           </p>
         </div>
@@ -69,10 +69,10 @@ export default function CsvPreviewTable({ data }: CsvPreviewTableProps) {
         <div className="overflow-x-auto w-full scrollbar-thin">
           <div style={{ width: totalTableWidth }} className="flex flex-col">
             {/* Headers row */}
-            <div className="flex items-center divide-x divide-slate-200 dark:divide-slate-700 bg-slate-100/90 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-350 select-none">
+            <div className="flex items-center divide-x divide-slate-200 dark:divide-slate-700 bg-slate-100/90 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-300 select-none">
               <div
                 style={{ width: INDEX_WIDTH }}
-                className="flex-shrink-0 px-3 py-3 text-center text-xs font-bold text-slate-450 dark:text-slate-550 uppercase tracking-wider"
+                className="flex-shrink-0 px-3 py-3 text-center text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
               >
                 #
               </div>
@@ -80,7 +80,7 @@ export default function CsvPreviewTable({ data }: CsvPreviewTableProps) {
                 <div
                   key={header}
                   style={{ width: COLUMN_WIDTH }}
-                  className="flex-shrink-0 px-3 py-3 text-left text-xs font-bold text-slate-650 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap"
+                  className="flex-shrink-0 px-3 py-3 text-left text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap"
                 >
                   {header}
                 </div>
