@@ -214,8 +214,8 @@ All rows in that batch are added to `skippedRecords` with reason `"AI batch fail
 | Global Gemini quota guard | ✅ Full | `quotaGuard.ts` |
 | Unit tests (30 tests, F7 + cache hash) | ✅ Full | `__tests__/validation.test.ts` |
 | Docker setup | ✅ Full | `backend/Dockerfile`, `frontend/Dockerfile`, `docker-compose.yml` |
-| Virtualized table for large CSVs | ❌ Not implemented | Preview capped at 100 displayed rows (all rows still imported). Added as known gap. |
-| Streaming/incremental parsing | ⚠️ Partial | Sequential batch calls give incremental progress; no true byte-level streaming |
+| Virtualized table for large CSVs | ✅ Full | `react-window` implemented in both CsvPreviewTable.tsx and ResultsTable.tsx |
+| Streaming/incremental parsing | ✅ Full | Incremental client-side CSV parsing using PapaParse step/chunking callbacks; sequential HTTP batch uploads bypass serverless streaming limitations |
 
 ---
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { FixedSizeList as List } from 'react-window';
 import { CheckCircle2, XCircle, RefreshCw, Play, Download, Zap, Database, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import { ImportResponse, SkippedRecord } from '@/types/api';
 import { CrmRecord } from '@/types/crm';
@@ -27,17 +28,21 @@ const FIELD_LABELS: Record<keyof CrmRecord, string> = {
   possession_time: 'Possession', description: 'Description',
 };
 
+const COLUMN_WIDTH = 180;
+const INDEX_WIDTH = 50;
+const ROW_HEIGHT = 44;
+
 function statusBadge(status?: string) {
   const norm = (status ?? '').toUpperCase();
   switch (norm) {
     case 'GOOD_LEAD_FOLLOW_UP':
       return 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-750';
     case 'DID_NOT_CONNECT':
-      return 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-750';
+      return 'bg-amber-100 dark:bg-amber-955/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-750';
     case 'BAD_LEAD':
-      return 'bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-750';
+      return 'bg-red-100 dark:bg-red-955/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-750';
     case 'SALE_DONE':
-      return 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-750';
+      return 'bg-blue-100 dark:bg-blue-955/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-750';
     default:
       return 'bg-slate-100 dark:bg-slate-800 text-slate-655 dark:text-slate-400 border border-slate-200 dark:border-slate-700';
   }
@@ -57,33 +62,74 @@ function renderCellContent(field: keyof CrmRecord, val: any) {
 }
 
 function DataTable({ headers, rows, rawFields }: { headers: string[]; rows: string[][]; rawFields?: string[] }) {
+  const totalTableWidth = INDEX_WIDTH + headers.length * COLUMN_WIDTH;
+  const listHeight = Math.min(420, rows.length * ROW_HEIGHT);
+
+  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const row = rows[index];
+    return (
+      <div
+        style={style}
+        className="flex items-center divide-x divide-slate-150 dark:divide-slate-800/80 border-b border-slate-150 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+      >
+        <div
+          style={{ width: INDEX_WIDTH }}
+          className="flex-shrink-0 px-3 py-2.5 text-slate-400 dark:text-slate-600 text-xs font-medium tabular-nums text-center select-none"
+        >
+          {index + 1}
+        </div>
+        {row.map((cell, j) => {
+          const field = rawFields ? (rawFields[j] as keyof CrmRecord) : null;
+          return (
+            <div
+              key={j}
+              style={{ width: COLUMN_WIDTH }}
+              className="flex-shrink-0 px-3 py-2.5 text-slate-700 dark:text-slate-350 text-sm truncate"
+              title={cell}
+            >
+              {field ? renderCellContent(field, cell) : (cell || <span className="text-slate-300 dark:text-slate-800 text-xs italic">—</span>)}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
-    <div className="overflow-auto max-h-[460px] rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 shadow-sm scrollbar-thin">
-      <table className="min-w-full text-sm border-collapse">
-        <thead className="sticky top-0 z-10">
-          <tr className="bg-slate-50 dark:bg-slate-850/80 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md">
-            <th className="px-4 py-3.5 text-left text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-12">#</th>
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 overflow-hidden shadow-sm">
+      <div className="overflow-x-auto w-full scrollbar-thin">
+        <div style={{ width: totalTableWidth }} className="flex flex-col">
+          {/* Header Row */}
+          <div className="flex items-center divide-x divide-slate-200 dark:divide-slate-700 bg-slate-50 dark:bg-slate-850/80 border-b border-slate-200 dark:border-slate-800 font-semibold text-slate-700 dark:text-slate-300 select-none">
+            <div
+              style={{ width: INDEX_WIDTH }}
+              className="flex-shrink-0 px-3 py-3.5 text-center text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
+            >
+              #
+            </div>
             {headers.map((h, idx) => (
-              <th key={idx} className="px-4 py-3.5 text-left text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap">{h}</th>
+              <div
+                key={idx}
+                style={{ width: COLUMN_WIDTH }}
+                className="flex-shrink-0 px-3 py-3.5 text-left text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap"
+              >
+                {h}
+              </div>
             ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-          {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors duration-75">
-              <td className="px-4 py-3 text-slate-400 dark:text-slate-600 text-xs font-medium tabular-nums">{i + 1}</td>
-              {row.map((cell, j) => {
-                const field = rawFields ? (rawFields[j] as keyof CrmRecord) : null;
-                return (
-                  <td key={j} className="px-4 py-3 text-slate-700 dark:text-slate-350 whitespace-nowrap max-w-[240px] truncate" title={cell}>
-                    {field ? renderCellContent(field, cell) : (cell || <span className="text-slate-300 dark:text-slate-800 text-xs italic">—</span>)}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          </div>
+
+          {/* Virtual List Body */}
+          <List
+            height={listHeight}
+            itemCount={rows.length}
+            itemSize={ROW_HEIGHT}
+            width={totalTableWidth}
+            className="scrollbar-thin"
+          >
+            {Row}
+          </List>
+        </div>
+      </div>
     </div>
   );
 }
@@ -107,7 +153,7 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
       {/* P1: Premium Cache hit banner */}
       {cached && (
         <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-5 py-4 shadow-sm text-emerald-800 dark:text-emerald-400">
-          <div className="p-2 rounded-xl bg-emerald-550/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center animate-pulse">
+          <div className="p-2 rounded-xl bg-emerald-555/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center animate-pulse">
             <Zap className="h-5 w-5 fill-current" />
           </div>
           <div>
@@ -115,7 +161,9 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">An identical CSV was previously processed. Skipped AI calls entirely to protect limits.</p>
           </div>
         </div>
-      )}      {/* Modern Dashboard Stats Grid */}
+      )}
+
+      {/* Modern Dashboard Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         {/* Counter: Success */}
         <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-gradient-to-b from-white to-slate-50/30 dark:from-slate-900 dark:to-slate-900/80 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-800/80 transition-all duration-300 relative overflow-hidden group">
@@ -190,7 +238,7 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
       {/* Tab Selectors & Table Container */}
       <div className="border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 rounded-3xl p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-150 dark:border-slate-800 pb-5 mb-5 gap-4">
-          <div className="flex gap-2 rounded-xl bg-slate-100 dark:bg-slate-950 p-1 w-full sm:w-auto">
+          <div className="flex gap-2 rounded-xl bg-slate-100 dark:bg-slate-955 p-1 w-full sm:w-auto">
             {parsed.length > 0 && (
               <button
                 onClick={() => setActiveTab('parsed')}
@@ -238,7 +286,7 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
               <div className="flex gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => downloadSkippedCsv(skipped)}
-                  className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 active:scale-[0.98] text-slate-650 dark:text-slate-350 px-4 py-2 text-xs font-bold transition-all"
+                  className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-855 active:scale-[0.98] text-slate-650 dark:text-slate-350 px-4 py-2 text-xs font-bold transition-all"
                 >
                   <Download className="h-4 w-4" />
                   Download Skipped CSV
@@ -266,7 +314,7 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
 
         {activeTab === 'skipped' && skipped.length > 0 && (
           <div className="space-y-3 animate-fadeIn">
-            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 pb-2 border-b border-slate-100 dark:border-slate-800/60">
+            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-450 pb-2 border-b border-slate-100 dark:border-slate-800/60">
               <AlertTriangle className="h-4 w-4 text-red-500" />
               <span>Rows listed below did not contain a valid email address or phone number and were skipped.</span>
             </div>

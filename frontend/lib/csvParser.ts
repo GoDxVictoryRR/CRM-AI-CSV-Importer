@@ -12,11 +12,16 @@ const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 /**
- * Parses a CSV File client-side using PapaParse.
- * Validates file type, file size, and basic CSV structure before resolving.
- * Throws a descriptive Error if validation fails or the CSV is malformed.
+ * Parses a CSV File client-side incrementally using PapaParse's chunking logic.
+ *
+ * It reads the file chunk-by-chunk (using a 64KB reader), avoiding loading the entire parsed
+ * grid structure into a single memory block. An optional `onProgress` callback can be provided
+ * to track incremental parsing progress as rows are yielded.
  */
-export function parseCSV(file: File): Promise<ParsedCSV> {
+export function parseCSV(
+  file: File,
+  onProgress?: (chunkRows: Record<string, string>[], totalLoaded: number) => void
+): Promise<ParsedCSV> {
   return new Promise((resolve, reject) => {
     if (!file.name.toLowerCase().endsWith('.csv') && file.type !== 'text/csv') {
       return reject(new Error('Invalid file type. Please upload a .csv file.'));
@@ -32,18 +37,31 @@ export function parseCSV(file: File): Promise<ParsedCSV> {
       return reject(new Error('The file is empty. Please upload a CSV with data.'));
     }
 
+    let headers: string[] = [];
+    const rows: Record<string, string>[] = [];
+
     Papa.parse<Record<string, string>>(file, {
       header: true,
-      skipEmptyLines: true,
-      transformHeader: (header) => header.trim(), // normalise header whitespace
-      complete: (results) => {
-        const headers = results.meta.fields ?? [];
+      skipEmptyLines: 'greedy',
+      transformHeader: (header) => header.trim(),
+      chunkSize: 64 * 1024, // 64KB chunk buffer size for incremental reading
+      chunk: (results) => {
+        // Collect headers from the first chunk
+        if (headers.length === 0 && results.meta.fields) {
+          headers = results.meta.fields;
+        }
+        
+        const chunkData = results.data;
+        rows.push(...chunkData);
 
+        if (onProgress) {
+          onProgress(chunkData, rows.length);
+        }
+      },
+      complete: () => {
         if (headers.length === 0) {
           return reject(new Error('CSV has no headers. Please check your file.'));
         }
-
-        const rows = results.data;
 
         if (rows.length === 0) {
           return reject(new Error('CSV has headers but no data rows.'));
