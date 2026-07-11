@@ -219,6 +219,30 @@ All rows in that batch are added to `skippedRecords` with reason `"AI batch fail
 
 ---
 
+## Application Interface Gallery
+
+To showcase the user experience flow, here is the complete visual sequence of the importer in action:
+
+### 1. File Upload Stage
+| 01. Light Mode - Homepage / CSV Drop Zone | 02. Dark Mode - Homepage / CSV Drop Zone |
+|:---:|:---:|
+| ![01. Light Mode - Homepage](/docs/screenshots/01_light_home.png) | ![02. Dark Mode - Homepage](/docs/screenshots/02_dark_home.png) |
+
+| 03. Active Drag & Drop State | 04. Virtualized CSV Preview Table |
+|:---:|:---:|
+| ![03. Active Drag Over](/docs/screenshots/03_drag_over.png) | ![04. CSV Preview Table](/docs/screenshots/04_preview_table.png) |
+
+### 2. Processing & Final Dashboard
+| 05. AI Extraction / Progress Loader | 06. Imported Leads Table Dashboard |
+|:---:|:---:|
+| ![05. Progress Loader](/docs/screenshots/05_progress_loader.png) | ![06. Imported Leads Dashboard](/docs/screenshots/06_imported_leads.png) |
+
+| 07. Skipped Rows Validation Panel | 08. Served From Cache (Gemini Bypass) |
+|:---:|:---:|
+| ![07. Skipped Rows Panel](/docs/screenshots/07_skipped_rows.png) | ![08. Cache Hit Banner](/docs/screenshots/08_cache_hit.png) |
+
+---
+
 ## Setup Instructions
 
 ### Prerequisites
@@ -306,6 +330,5 @@ docker-compose up --build
 | In-memory cache resets on backend restart/sleep | Repeated uploads re-call Gemini after a cold start | Free-tier stateless deployment; Redis would require a paid tier |
 | Global quota guard counter resets on backend restart | Midday restart resets daily counter to 0 (conservative) | Acceptable; worst case = more Gemini calls allowed, not fewer |
 | Per-IP rate limit is 100 req/10min | A single IP making 100+ batch calls within 10min will be blocked | Designed for 3000-row max per 10-min window; larger files need multiple sessions |
-| No virtualized table | Preview table shows max 100 rows (all rows are still imported by the backend) | react-window integration out of scope for this assignment timeframe |
 | Gemini `gemini-flash-latest` model | Free-tier; may have variable latency under load | Only model confirmed available on this API key's quota tier |
 | No persistent database | Import results exist only in the browser session; no server-side storage | Assignment does not require persistence; adding a DB would be out of scope |
