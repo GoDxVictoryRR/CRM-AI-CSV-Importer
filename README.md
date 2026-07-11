@@ -292,8 +292,8 @@ docker-compose up --build
 
 | Service | URL |
 |---|---|
-| Frontend (Vercel) | *(To be updated after deployment)* |
-| Backend (Render) | *(To be updated after deployment)* |
+| Frontend (Vercel) | https://crm-ai-csv-importer.vercel.app/ |
+| Backend (Render) | https://groweasy-crm-importer-api-01lq.onrender.com |
 
 **Render Free-Tier Cold Start:** The backend automatically spins down after 15 minutes of inactivity. The first request after a sleep period may take 30–60 seconds to respond while Render wakes the container. Subsequent requests are instant. This is an expected, documented characteristic of the free tier — not a bug.
 
