@@ -75,10 +75,10 @@ export default function CsvUploader({ onFileSelected }: CsvUploaderProps) {
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
       {/* Hero text */}
       <div className="mb-10 text-center">
-        <h2 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight mb-3">
+        <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
           Import CRM Leads from Any CSV
         </h2>
-        <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto text-base">
+        <p className="text-slate-500 dark:text-slate-450 max-w-md mx-auto text-base leading-relaxed">
           Upload any CSV — Facebook leads, Google Ads exports, real-estate CRM files,
           or manual sheets. AI maps the columns automatically.
         </p>
@@ -96,45 +96,45 @@ export default function CsvUploader({ onFileSelected }: CsvUploaderProps) {
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         className={`
-          relative w-full max-w-xl rounded-2xl border-2 border-dashed p-12 text-center
-          cursor-pointer transition-all duration-200 group shadow-sm
+          relative w-full max-w-xl rounded-3xl border-2 border-dashed p-14 text-center
+          cursor-pointer transition-all duration-300 group shadow-md shadow-slate-100/40 dark:shadow-none
           ${
             isDragging
-              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 scale-[1.01]'
-              : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/60 hover:border-emerald-500/60 hover:bg-slate-50 dark:hover:bg-slate-900'
+              ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 scale-[1.01]'
+              : 'border-slate-250 dark:border-slate-750 bg-gradient-to-tr from-white to-slate-50/50 dark:from-slate-900/60 dark:to-slate-900/40 hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-900/5 dark:hover:bg-slate-900'
           }
         `}
       >
         {/* Gradient glow on drag */}
         {isDragging && (
-          <div className="absolute inset-0 rounded-2xl bg-emerald-500/5 pointer-events-none" />
+          <div className="absolute inset-0 rounded-3xl bg-emerald-500/5 pointer-events-none" />
         )}
 
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-5">
           <div
             className={`
-              w-16 h-16 rounded-xl flex items-center justify-center transition-colors
-              ${isDragging ? 'bg-emerald-100 dark:bg-emerald-500/20' : 'bg-slate-100 dark:bg-slate-800 group-hover:bg-slate-200 dark:group-hover:bg-slate-700'}
+              w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300
+              ${isDragging ? 'bg-emerald-100 dark:bg-emerald-500/20' : 'bg-slate-100/80 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-slate-700'}
             `}
           >
             <UploadCloud
-              className={`h-8 w-8 transition-colors ${isDragging ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-emerald-500'}`}
+              className={`h-8 w-8 transition-colors ${isDragging ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-400 group-hover:text-emerald-500'}`}
             />
           </div>
 
           <div>
-            <p className="text-base font-medium text-slate-800 dark:text-white mb-1">
+            <p className="text-lg font-bold text-slate-850 dark:text-white mb-1">
               {isDragging ? 'Drop your CSV here' : 'Drag & drop your CSV here'}
             </p>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-400 dark:text-slate-500">
               or{' '}
-              <span className="text-emerald-600 dark:text-emerald-400 underline underline-offset-2 cursor-pointer">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold hover:text-emerald-500 underline underline-offset-2 cursor-pointer transition-colors">
                 browse files
               </span>
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-650">
+          <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-600 bg-slate-50 dark:bg-slate-900/60 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-800">
             <FileText className="h-3.5 w-3.5" />
             <span>.csv files only · max {MAX_SIZE_MB} MB</span>
           </div>

@@ -212,9 +212,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-tr from-slate-50 via-slate-50 to-emerald-50/20 dark:from-slate-955 dark:dark:via-slate-950 dark:to-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
       {/* Background Mesh Glows */}
-      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-emerald-550/10 dark:bg-emerald-550/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-teal-500/10 dark:bg-teal-500/5 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Header */}

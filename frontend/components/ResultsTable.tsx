@@ -115,16 +115,14 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">An identical CSV was previously processed. Skipped AI calls entirely to protect limits.</p>
           </div>
         </div>
-      )}
-
-      {/* Modern Dashboard Stats Grid */}
+      )}      {/* Modern Dashboard Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         {/* Counter: Success */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-gradient-to-b from-white to-slate-50/30 dark:from-slate-900 dark:to-slate-900/80 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-800/80 transition-all duration-300 relative overflow-hidden group">
           <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-emerald-500/10 to-transparent rounded-bl-full opacity-50" />
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">{totalParsed.toLocaleString()}</p>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{totalParsed.toLocaleString()}</p>
               <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1.5">Leads Imported</p>
             </div>
             <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
@@ -132,17 +130,17 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
             </div>
           </div>
           <div className="mt-3 text-xs text-slate-500 flex items-center gap-1.5">
-            <Database className="h-3.5 w-3.5 text-slate-400" />
+            <Database className="h-3.5 w-3.5 text-slate-450" />
             <span>Successfully mapped to CRM</span>
           </div>
         </div>
 
         {/* Counter: Skipped */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-gradient-to-b from-white to-slate-50/30 dark:from-slate-900 dark:to-slate-900/80 p-5 shadow-sm hover:shadow-md hover:border-red-300 dark:hover:border-red-800/80 transition-all duration-300 relative overflow-hidden group">
           <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-red-500/10 to-transparent rounded-bl-full opacity-50" />
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">{totalSkipped.toLocaleString()}</p>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{totalSkipped.toLocaleString()}</p>
               <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1.5">Rows Skipped</p>
             </div>
             <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
@@ -150,17 +148,17 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
             </div>
           </div>
           <div className="mt-3 text-xs text-slate-500 flex items-center gap-1.5">
-            <AlertTriangle className="h-3.5 w-3.5 text-slate-400" />
+            <AlertTriangle className="h-3.5 w-3.5 text-slate-455" />
             <span>Missing mandatory contact details</span>
           </div>
         </div>
 
         {/* Counter: Combined Total */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-gradient-to-b from-white to-slate-50/30 dark:from-slate-900 dark:to-slate-900/80 p-5 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-800/80 transition-all duration-300 relative overflow-hidden group">
           <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-bl-full opacity-50" />
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">{(totalParsed + totalSkipped).toLocaleString()}</p>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{(totalParsed + totalSkipped).toLocaleString()}</p>
               <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1.5">Total Processed</p>
             </div>
             <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400">
@@ -173,15 +171,15 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
         </div>
 
         {/* Dynamic Reset Card */}
-        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-5 flex flex-col justify-between hover:border-emerald-500/40 hover:bg-slate-50 dark:hover:bg-slate-900/20 transition-all group">
+        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-5 flex flex-col justify-between hover:border-emerald-500/40 hover:bg-emerald-50/10 dark:hover:bg-slate-900/20 transition-all duration-300 group">
           <div>
             <h4 className="font-bold text-sm text-slate-850 dark:text-white">Batch completed!</h4>
-            <p className="text-xs text-slate-500 mt-1">Ready to upload another dataset?</p>
+            <p className="text-xs text-slate-450 dark:text-slate-500 mt-1.5 leading-relaxed">Ready to upload another dataset?</p>
           </div>
           <button
             id="import-again-btn"
             onClick={onReset}
-            className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 px-4 py-2.5 text-xs font-bold shadow transition-all active:scale-[0.98]"
+            className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-555 text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-955 px-4 py-2.5 text-xs font-bold shadow-md shadow-emerald-600/10 hover:shadow-lg hover:shadow-emerald-600/20 transition-all active:scale-[0.98]"
           >
             <RefreshCw className="h-4 w-4" />
             Import another CSV
