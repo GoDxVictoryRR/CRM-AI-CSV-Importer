@@ -12,9 +12,10 @@ export async function importCSV(file: File): Promise<ImportResponse> {
   const formData = new FormData();
   formData.append('file', file);
 
+  const baseUrl = BACKEND_URL.replace(/\/+$/, '');
   let response: Response;
   try {
-    response = await fetch(`${BACKEND_URL}/api/import`, {
+    response = await fetch(`${baseUrl}/api/import`, {
       method: 'POST',
       body: formData,
     });
