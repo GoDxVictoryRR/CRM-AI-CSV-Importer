@@ -223,23 +223,22 @@ All rows in that batch are added to `skippedRecords` with reason `"AI batch fail
 
 To showcase the user experience flow, here is the complete visual sequence of the importer in action:
 
-### 1. File Upload Stage
 | 01. Light Mode - Homepage / CSV Drop Zone | 02. Dark Mode - Homepage / CSV Drop Zone |
 |:---:|:---:|
-| ![01. Light Mode - Homepage](/docs/screenshots/01_light_home.png) | ![02. Dark Mode - Homepage](/docs/screenshots/02_dark_home.png) |
+| <img width="1919" height="925" alt="Screenshot 2026-07-11 173636" src="https://github.com/user-attachments/assets/79981142-2620-457c-a568-5d7c9006012b" /> | <img width="1919" height="916" alt="Screenshot 2026-07-11 173459" src="https://github.com/user-attachments/assets/86afb89b-a54b-4ad6-96d4-ebcf2ed8103e" /> |
 
 | 03. Active Drag & Drop State | 04. Virtualized CSV Preview Table |
 |:---:|:---:|
-| ![03. Active Drag Over](/docs/screenshots/03_drag_over.png) | ![04. CSV Preview Table](/docs/screenshots/04_preview_table.png) |
+| <img width="1908" height="933" alt="Screenshot 2026-07-11 173536" src="https://github.com/user-attachments/assets/4bea25cc-7f79-4a81-b323-75031ed27196" /> | <img width="1914" height="943" alt="Screenshot 2026-07-11 173519" src="https://github.com/user-attachments/assets/2897570e-e7d1-4123-8363-92f379af8ef9" /> |
 
 ### 2. Processing & Final Dashboard
 | 05. AI Extraction / Progress Loader | 06. Imported Leads Table Dashboard |
 |:---:|:---:|
-| ![05. Progress Loader](/docs/screenshots/05_progress_loader.png) | ![06. Imported Leads Dashboard](/docs/screenshots/06_imported_leads.png) |
+| <img width="1910" height="972" alt="Screenshot 2026-07-11 173554" src="https://github.com/user-attachments/assets/8a600108-e4c2-4029-8c8a-b720933e4280" /> | <img width="1915" height="927" alt="Screenshot 2026-07-11 173626" src="https://github.com/user-attachments/assets/b196a031-fd8a-40cc-9b94-0392b6042a78" /> |
 
 | 07. Skipped Rows Validation Panel | 08. Served From Cache (Gemini Bypass) |
 |:---:|:---:|
-| ![07. Skipped Rows Panel](/docs/screenshots/07_skipped_rows.png) | ![08. Cache Hit Banner](/docs/screenshots/08_cache_hit.png) |
+| <img width="1916" height="937" alt="Screenshot 2026-07-11 173604" src="https://github.com/user-attachments/assets/5be440df-b715-43d7-8b8f-5eefc27718c0" /> | <img width="1919" height="923" alt="Screenshot 2026-07-11 173615" src="https://github.com/user-attachments/assets/5abf9d02-6edc-4319-afa6-7af6d877a809" /> |
 
 ---
 
