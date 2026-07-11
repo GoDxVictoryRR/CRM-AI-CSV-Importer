@@ -1,10 +1,7 @@
 # GrowEasy CRM — AI CSV Lead Importer
 
-A production-ready AI-powered CSV importer built as a hiring assignment for **GrowEasy** (https://groweasy.ai). It accepts arbitrary CSV files from any lead source (Facebook Ads, Google Sheets, real-estate CRM exports, manual spreadsheets), intelligently maps columns to a strict CRM schema using Gemini AI, enforces deterministic business rules regardless of AI output, and presents structured import results with CSV download support.
+A production-ready AI-powered CSV importer. It accepts arbitrary CSV files from any lead source (Facebook Ads, Google Sheets, real-estate CRM exports, manual spreadsheets), intelligently maps columns to a strict CRM schema using Gemini AI, enforces deterministic business rules regardless of AI output, and presents structured import results with CSV download support.
 
-> **Submitted by:** [Your Name] · **Position:** Software Developer Intern / Full-Time
-
----
 
 ## Architecture & Flow Diagram
 
