@@ -212,17 +212,26 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-colors duration-300 relative overflow-hidden">
+      {/* Background Mesh Glows */}
+      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-teal-500/10 dark:bg-teal-500/5 rounded-full blur-[100px] pointer-events-none" />
+
       {/* Header */}
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 sticky top-0 z-20 backdrop-blur shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-emerald-900/10 dark:shadow-emerald-950/40">
+      <header className="border-b border-slate-200/80 dark:border-slate-850/80 bg-white/70 dark:bg-slate-950/70 sticky top-0 z-20 backdrop-blur-md shadow-sm transition-colors duration-300">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-550 to-teal-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-emerald-500/20 dark:shadow-emerald-950/50">
               GE
             </div>
-            <span className="font-semibold text-slate-800 dark:text-white tracking-tight">
-              GrowEasy Importer
-            </span>
+            <div>
+              <span className="font-extrabold text-slate-900 dark:text-white tracking-tight block leading-none">
+                GrowEasy
+              </span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block mt-0.5">
+                AI CRM Importer
+              </span>
+            </div>
           </div>
           
           <div className="flex items-center gap-4">
@@ -230,34 +239,36 @@ export default function Home() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle visual theme"
-              className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
+              className="p-2 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-850 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white shadow-sm hover:shadow active:scale-[0.96] transition-all"
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <span className="text-xs text-slate-400 dark:text-slate-555 font-medium hidden sm:inline">CRM Importer v1.0</span>
+            <span className="text-xs text-slate-450 dark:text-slate-500 font-semibold bg-slate-100 dark:bg-slate-900 px-3 py-1 rounded-full hidden sm:inline border border-slate-200/60 dark:border-slate-800/60">
+              v1.0
+            </span>
           </div>
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 relative z-10">
         {/* Error notification banner with actionable hint */}
         {errorDetails && (
-          <div className="mb-6 flex flex-col gap-1 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-950/40 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+          <div className="mb-8 flex flex-col gap-1 rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50/65 dark:bg-red-950/20 p-5 text-sm text-red-700 dark:text-red-300 shadow-sm animate-fadeIn">
             <div className="flex items-start justify-between">
-              <span className="font-semibold capitalize flex items-center gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-xs flex items-center gap-1.5">
                 ⚠️ {errorDetails.type} Error
               </span>
               <button
                 onClick={() => setErrorDetails(null)}
-                className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xs font-semibold focus:outline-none"
+                className="text-red-500 hover:text-red-750 dark:hover:text-red-300 text-xs font-bold transition-colors"
               >
                 Dismiss
               </button>
             </div>
-            <p className="mt-1 font-medium">{errorDetails.message}</p>
+            <p className="mt-2 font-semibold text-slate-850 dark:text-red-200">{errorDetails.message}</p>
             {errorDetails.actionableHint && (
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 border-t border-red-200 dark:border-red-500/10 pt-2 italic">
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 border-t border-red-250/20 dark:border-red-500/10 pt-2.5 italic">
                 Recommendation: {errorDetails.actionableHint}
               </p>
             )}
@@ -266,26 +277,26 @@ export default function Home() {
 
         {/* State 1: Loading (AI Processing) with Batch Progress */}
         {isLoading && !parsedCsv ? (
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 backdrop-blur-sm p-8 shadow-sm">
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-850 bg-white/60 dark:bg-slate-900/10 backdrop-blur-md p-10 shadow-sm transition-all duration-300">
             <LoadingState batchesDone={batchesDone} totalBatches={batchesTotal} />
           </div>
         ) : importResult ? (
           /* State 2: Import Completed (Results display) */
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-850 bg-white dark:bg-slate-900/20 p-8 shadow-md">
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-850 bg-white/40 dark:bg-slate-900/10 p-10 shadow-sm transition-all duration-300">
             <ResultsTable result={importResult} onReset={handleReset} onRetrySkipped={handleRetrySkipped} />
           </div>
         ) : parsedCsv ? (
           /* State 3: File Previewed (Raw preview table and confirmation trigger) */
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <div className="flex justify-between items-center flex-wrap gap-2">
               <button
                 onClick={handleReset}
-                className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-1.5 transition-colors"
+                className="text-xs text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-white flex items-center gap-1.5 transition-colors font-bold"
               >
-                ← Change file
+                ← Back to Upload
               </button>
             </div>
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 backdrop-blur-sm p-6 shadow-md">
+            <div className="rounded-3xl border border-slate-200 dark:border-slate-850 bg-white/40 dark:bg-slate-900/10 backdrop-blur-md p-6 shadow-sm">
               <CsvPreviewTable data={parsedCsv} />
               <ConfirmImportBar
                 rowCount={parsedCsv.totalRows}
@@ -297,12 +308,13 @@ export default function Home() {
           </div>
         ) : (
           /* State 4: Default Upload Entrypoint */
-          <CsvUploader onFileSelected={handleFileSelected} />
+          <div className="animate-fadeIn">
+            <CsvUploader onFileSelected={handleFileSelected} />
+          </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-950 transition-colors">
+      <footer className="border-t border-slate-200 dark:border-slate-850 py-6 text-center text-xs text-slate-400 dark:text-slate-655 bg-white/40 dark:bg-slate-950/40 backdrop-blur transition-colors">
         <p>© 2026 GrowEasy CRM. All rights reserved.</p>
       </footer>
     </div>

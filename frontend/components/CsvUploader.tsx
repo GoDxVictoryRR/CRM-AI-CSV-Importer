@@ -1,8 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { UploadCloud, FileText, Download } from 'lucide-react';
-import { downloadSampleTemplate } from '@/lib/csvExporter';
+import { UploadCloud, FileText } from 'lucide-react';
 
 interface CsvUploaderProps {
   onFileSelected: (file: File) => void;
@@ -177,15 +176,6 @@ export default function CsvUploader({ onFileSelected }: CsvUploaderProps) {
           )
         )}
       </div>
-
-      {/* P4: Download sample template */}
-      <button
-        onClick={downloadSampleTemplate}
-        className="mt-5 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-500 hover:text-emerald-500 dark:hover:text-emerald-400 underline underline-offset-2 transition-colors"
-      >
-        <Download className="h-3.5 w-3.5" />
-        Download Sample CSV Template
-      </button>
     </div>
   );
 }

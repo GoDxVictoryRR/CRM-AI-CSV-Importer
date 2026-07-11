@@ -1,6 +1,7 @@
 'use client';
 
-import { CheckCircle2, XCircle, RefreshCw, Play, Download, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, XCircle, RefreshCw, Play, Download, Zap, Database, AlertTriangle, FileSpreadsheet } from 'lucide-react';
 import { ImportResponse, SkippedRecord } from '@/types/api';
 import { CrmRecord } from '@/types/crm';
 import { downloadParsedCsv, downloadSkippedCsv } from '@/lib/csvExporter';
@@ -26,27 +27,59 @@ const FIELD_LABELS: Record<keyof CrmRecord, string> = {
   possession_time: 'Possession', description: 'Description',
 };
 
-function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
+function statusBadge(status?: string) {
+  const norm = (status ?? '').toUpperCase();
+  switch (norm) {
+    case 'GOOD_LEAD_FOLLOW_UP':
+      return 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-750';
+    case 'DID_NOT_CONNECT':
+      return 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-750';
+    case 'BAD_LEAD':
+      return 'bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-750';
+    case 'SALE_DONE':
+      return 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-750';
+    default:
+      return 'bg-slate-100 dark:bg-slate-800 text-slate-655 dark:text-slate-400 border border-slate-200 dark:border-slate-700';
+  }
+}
+
+function renderCellContent(field: keyof CrmRecord, val: any) {
+  const str = String(val ?? '');
+  if (field === 'crm_status' && val) {
+    const formatted = str.replace(/_/g, ' ');
+    return (
+      <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide ${statusBadge(str)}`}>
+        {formatted}
+      </span>
+    );
+  }
+  return str;
+}
+
+function DataTable({ headers, rows, rawFields }: { headers: string[]; rows: string[][]; rawFields?: string[] }) {
   return (
-    <div className="overflow-auto max-h-96 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900/80 shadow-sm">
+    <div className="overflow-auto max-h-[460px] rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 shadow-sm scrollbar-thin">
       <table className="min-w-full text-sm border-collapse">
         <thead className="sticky top-0 z-10">
-          <tr className="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-            <th className="px-3 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider w-10 text-left">#</th>
-            {headers.map((h) => (
-              <th key={h} className="px-3 py-3 text-xs font-medium text-slate-600 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap text-left">{h}</th>
+          <tr className="bg-slate-50 dark:bg-slate-850/80 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md">
+            <th className="px-4 py-3.5 text-left text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider w-12">#</th>
+            {headers.map((h, idx) => (
+              <th key={idx} className="px-4 py-3.5 text-left text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap">{h}</th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
           {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-              <td className="px-3 py-2.5 text-slate-400 dark:text-slate-600 text-xs tabular-nums">{i + 1}</td>
-              {row.map((cell, j) => (
-                <td key={j} className="px-3 py-2.5 text-slate-700 dark:text-slate-300 whitespace-nowrap max-w-[200px] truncate" title={cell}>
-                  {cell || <span className="text-slate-300 dark:text-slate-700 text-xs italic">—</span>}
-                </td>
-              ))}
+            <tr key={i} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors duration-75">
+              <td className="px-4 py-3 text-slate-400 dark:text-slate-600 text-xs font-medium tabular-nums">{i + 1}</td>
+              {row.map((cell, j) => {
+                const field = rawFields ? (rawFields[j] as keyof CrmRecord) : null;
+                return (
+                  <td key={j} className="px-4 py-3 text-slate-700 dark:text-slate-350 whitespace-nowrap max-w-[240px] truncate" title={cell}>
+                    {field ? renderCellContent(field, cell) : (cell || <span className="text-slate-300 dark:text-slate-800 text-xs italic">—</span>)}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
@@ -57,6 +90,7 @@ function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
 
 export default function ResultsTable({ result, onReset, onRetrySkipped }: ResultsTableProps) {
   const { parsed, skipped, totalParsed, totalSkipped, cached } = result;
+  const [activeTab, setActiveTab] = useState<'parsed' | 'skipped'>(parsed.length > 0 ? 'parsed' : 'skipped');
 
   const activeFields = CRM_FIELD_ORDER.filter((field) => parsed.some((r) => r[field]));
   const parsedRows = parsed.map((record) => activeFields.map((field) => String(record[field] ?? '')));
@@ -69,104 +103,179 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
   ]);
 
   return (
-    <div className="space-y-8">
-      {/* P1: Cache hit badge */}
+    <div className="space-y-8 animate-fadeIn">
+      {/* P1: Premium Cache hit banner */}
       {cached && (
-        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 dark:border-emerald-700/40 bg-emerald-50 dark:bg-emerald-950/30 px-4 py-2.5 text-sm text-emerald-700 dark:text-emerald-400">
-          <Zap className="h-4 w-4 fill-current" />
-          <span className="font-semibold">Served from cache</span>
-          <span className="text-emerald-600 dark:text-emerald-500 font-normal">— no AI call used. Identical file was previously processed.</span>
+        <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-5 py-4 shadow-sm text-emerald-800 dark:text-emerald-400">
+          <div className="p-2 rounded-xl bg-emerald-550/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center animate-pulse">
+            <Zap className="h-5 w-5 fill-current" />
+          </div>
+          <div>
+            <h4 className="font-bold text-sm">Served from cache</h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">An identical CSV was previously processed. Skipped AI calls entirely to protect limits.</p>
+          </div>
         </div>
       )}
 
-      {/* Summary strip */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-emerald-200 dark:border-emerald-700/40 bg-emerald-50 dark:bg-emerald-950/30 p-4">
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{totalParsed.toLocaleString()}</p>
-          <p className="text-xs text-emerald-700 dark:text-emerald-500 mt-1 font-semibold uppercase tracking-wide">Imported</p>
+      {/* Modern Dashboard Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        {/* Counter: Success */}
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-emerald-500/10 to-transparent rounded-bl-full opacity-50" />
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">{totalParsed.toLocaleString()}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1.5">Leads Imported</p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
+          </div>
+          <div className="mt-3 text-xs text-slate-500 flex items-center gap-1.5">
+            <Database className="h-3.5 w-3.5 text-slate-400" />
+            <span>Successfully mapped to CRM</span>
+          </div>
         </div>
-        <div className="rounded-xl border border-red-200 dark:border-red-700/40 bg-red-50 dark:bg-red-950/30 p-4">
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{totalSkipped.toLocaleString()}</p>
-          <p className="text-xs text-red-700 dark:text-red-500 mt-1 font-semibold uppercase tracking-wide">Skipped</p>
+
+        {/* Counter: Skipped */}
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-red-500/10 to-transparent rounded-bl-full opacity-50" />
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">{totalSkipped.toLocaleString()}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1.5">Rows Skipped</p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">
+              <XCircle className="h-5 w-5" />
+            </div>
+          </div>
+          <div className="mt-3 text-xs text-slate-500 flex items-center gap-1.5">
+            <AlertTriangle className="h-3.5 w-3.5 text-slate-400" />
+            <span>Missing mandatory contact details</span>
+          </div>
         </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-800/50 p-4">
-          <p className="text-2xl font-bold text-slate-800 dark:text-white">{(totalParsed + totalSkipped).toLocaleString()}</p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold uppercase tracking-wide">Total rows</p>
+
+        {/* Counter: Combined Total */}
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute right-0 top-0 h-24 w-24 bg-gradient-to-bl from-blue-500/10 to-transparent rounded-bl-full opacity-50" />
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">{(totalParsed + totalSkipped).toLocaleString()}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1.5">Total Processed</p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400">
+              <FileSpreadsheet className="h-5 w-5" />
+            </div>
+          </div>
+          <div className="mt-3 text-xs text-slate-500">
+            <span>Accuracy rate: {totalParsed + totalSkipped > 0 ? Math.round((totalParsed / (totalParsed + totalSkipped)) * 100) : 0}%</span>
+          </div>
         </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-800/50 p-4 flex items-center justify-center">
+
+        {/* Dynamic Reset Card */}
+        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-5 flex flex-col justify-between hover:border-emerald-500/40 hover:bg-slate-50 dark:hover:bg-slate-900/20 transition-all group">
+          <div>
+            <h4 className="font-bold text-sm text-slate-850 dark:text-white">Batch completed!</h4>
+            <p className="text-xs text-slate-500 mt-1">Ready to upload another dataset?</p>
+          </div>
           <button
             id="import-again-btn"
             onClick={onReset}
-            className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 px-4 py-2.5 text-xs font-bold shadow transition-all active:scale-[0.98]"
           >
             <RefreshCw className="h-4 w-4" />
-            Import another
+            Import another CSV
           </button>
         </div>
       </div>
 
-      {/* Parsed records */}
-      {parsed.length > 0 && (
-        <section>
-          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-              <h2 className="text-base font-semibold text-slate-800 dark:text-white">
-                Successfully Parsed
-                <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">({totalParsed.toLocaleString()} records)</span>
-              </h2>
-            </div>
-            {/* P3: Download parsed CSV */}
-            <button
-              onClick={() => downloadParsedCsv(parsed)}
-              className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
-            >
-              <Download className="h-3.5 w-3.5" />
-              Download Results CSV
-            </button>
-          </div>
-          <DataTable headers={activeFields.map((f) => FIELD_LABELS[f])} rows={parsedRows} />
-        </section>
-      )}
-
-      {/* Skipped records */}
-      {skipped.length > 0 && (
-        <section>
-          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-              <h2 className="text-base font-semibold text-slate-800 dark:text-white">
-                Skipped Records
-                <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">({totalSkipped.toLocaleString()} records)</span>
-              </h2>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* P3: Download skipped CSV */}
+      {/* Tab Selectors & Table Container */}
+      <div className="border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/40 rounded-3xl p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-150 dark:border-slate-800 pb-5 mb-5 gap-4">
+          <div className="flex gap-2 rounded-xl bg-slate-100 dark:bg-slate-950 p-1 w-full sm:w-auto">
+            {parsed.length > 0 && (
               <button
-                onClick={() => downloadSkippedCsv(skipped)}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all"
+                onClick={() => setActiveTab('parsed')}
+                className={`flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all w-full sm:w-auto ${
+                  activeTab === 'parsed'
+                    ? 'bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                }`}
               >
-                <Download className="h-3.5 w-3.5" />
-                Download Skipped CSV
+                <span>Imported Leads</span>
+                <span className={`px-1.5 py-0.5 text-[10px] rounded-full font-bold ${activeTab === 'parsed' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-655'}`}>
+                  {totalParsed}
+                </span>
               </button>
-              {/* Retry failed rows */}
-              {onRetrySkipped && (
-                <button
-                  onClick={() => onRetrySkipped(skipped)}
-                  className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
-                >
-                  <Play className="h-3 w-3 fill-current" />
-                  Retry Failed Rows
-                </button>
-              )}
-            </div>
+            )}
+            {skipped.length > 0 && (
+              <button
+                onClick={() => setActiveTab('skipped')}
+                className={`flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg transition-all w-full sm:w-auto ${
+                  activeTab === 'skipped'
+                    ? 'bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                }`}
+              >
+                <span>Skipped Records</span>
+                <span className={`px-1.5 py-0.5 text-[10px] rounded-full font-bold ${activeTab === 'skipped' ? 'bg-red-50 dark:bg-red-950/60 text-red-656 dark:text-red-400' : 'bg-slate-200 dark:bg-slate-800 text-slate-655'}`}>
+                  {totalSkipped}
+                </span>
+              </button>
+            )}
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-            These rows were skipped due to missing email/mobile contacts, validation rules, or AI processing issues.
-          </p>
-          <DataTable headers={skippedHeaders} rows={skippedRows} />
-        </section>
-      )}
+
+          {/* Action buttons matching current tab */}
+          <div>
+            {activeTab === 'parsed' && parsed.length > 0 && (
+              <button
+                onClick={() => downloadParsedCsv(parsed)}
+                className="flex items-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-450 active:scale-[0.98] text-white px-4 py-2 text-xs font-bold shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/20 transition-all w-full sm:w-auto"
+              >
+                <Download className="h-4 w-4" />
+                Download Results CSV
+              </button>
+            )}
+            {activeTab === 'skipped' && skipped.length > 0 && (
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => downloadSkippedCsv(skipped)}
+                  className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 active:scale-[0.98] text-slate-650 dark:text-slate-350 px-4 py-2 text-xs font-bold transition-all"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Skipped CSV
+                </button>
+                {onRetrySkipped && (
+                  <button
+                    onClick={() => onRetrySkipped(skipped)}
+                    className="flex items-center gap-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-[0.98] text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-4 py-2 text-xs font-bold transition-all"
+                  >
+                    <Play className="h-3.5 w-3.5 fill-current" />
+                    Retry Skipped
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'parsed' && parsed.length > 0 && (
+          <div className="space-y-3 animate-fadeIn">
+            <DataTable headers={activeFields.map((f) => FIELD_LABELS[f])} rows={parsedRows} rawFields={activeFields} />
+          </div>
+        )}
+
+        {activeTab === 'skipped' && skipped.length > 0 && (
+          <div className="space-y-3 animate-fadeIn">
+            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 pb-2 border-b border-slate-100 dark:border-slate-800/60">
+              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <span>Rows listed below did not contain a valid email address or phone number and were skipped.</span>
+            </div>
+            <DataTable headers={skippedHeaders} rows={skippedRows} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
