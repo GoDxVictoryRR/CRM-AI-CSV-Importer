@@ -1,8 +1,9 @@
 'use client';
 
-import { CheckCircle2, XCircle, RefreshCw, Play } from 'lucide-react';
+import { CheckCircle2, XCircle, RefreshCw, Play, Download, Zap } from 'lucide-react';
 import { ImportResponse, SkippedRecord } from '@/types/api';
 import { CrmRecord } from '@/types/crm';
+import { downloadParsedCsv, downloadSkippedCsv } from '@/lib/csvExporter';
 
 interface ResultsTableProps {
   result: ImportResponse;
@@ -25,14 +26,7 @@ const FIELD_LABELS: Record<keyof CrmRecord, string> = {
   possession_time: 'Possession', description: 'Description',
 };
 
-/** Scrollable data table — shared between parsed and skipped sections. Supports light and dark mode classes. */
-function DataTable({
-  headers,
-  rows,
-}: {
-  headers: string[];
-  rows: string[][];
-}) {
+function DataTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
     <div className="overflow-auto max-h-96 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900/80 shadow-sm">
       <table className="min-w-full text-sm border-collapse">
@@ -40,9 +34,7 @@ function DataTable({
           <tr className="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
             <th className="px-3 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider w-10 text-left">#</th>
             {headers.map((h) => (
-              <th key={h} className="px-3 py-3 text-xs font-medium text-slate-600 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap text-left">
-                {h}
-              </th>
+              <th key={h} className="px-3 py-3 text-xs font-medium text-slate-600 dark:text-slate-300 uppercase tracking-wider whitespace-nowrap text-left">{h}</th>
             ))}
           </tr>
         </thead>
@@ -63,25 +55,11 @@ function DataTable({
   );
 }
 
-/**
- * F9 — Results display after AI import completes.
- * Shows parsed records table, skipped records table, and totals.
- * Reuses the scrollable table pattern from F2.
- */
 export default function ResultsTable({ result, onReset, onRetrySkipped }: ResultsTableProps) {
-  const { parsed, skipped, totalParsed, totalSkipped } = result;
+  const { parsed, skipped, totalParsed, totalSkipped, cached } = result;
 
-  // Only show columns that have at least one value in parsed records
-  const activeFields = CRM_FIELD_ORDER.filter((field) =>
-    parsed.some((r) => r[field])
-  );
-
-  const parsedRows = parsed.map((record) =>
-    activeFields.map((field) => {
-      const val = record[field] ?? '';
-      return String(val);
-    })
-  );
+  const activeFields = CRM_FIELD_ORDER.filter((field) => parsed.some((r) => r[field]));
+  const parsedRows = parsed.map((record) => activeFields.map((field) => String(record[field] ?? '')));
 
   const skippedHeaders = ['Row #', 'Reason', ...Object.keys(skipped[0]?.rowRawData ?? {}).slice(0, 6)];
   const skippedRows = skipped.map((s) => [
@@ -92,6 +70,15 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
 
   return (
     <div className="space-y-8">
+      {/* P1: Cache hit badge */}
+      {cached && (
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-200 dark:border-emerald-700/40 bg-emerald-50 dark:bg-emerald-950/30 px-4 py-2.5 text-sm text-emerald-700 dark:text-emerald-400">
+          <Zap className="h-4 w-4 fill-current" />
+          <span className="font-semibold">Served from cache</span>
+          <span className="text-emerald-600 dark:text-emerald-500 font-normal">— no AI call used. Identical file was previously processed.</span>
+        </div>
+      )}
+
       {/* Summary strip */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="rounded-xl border border-emerald-200 dark:border-emerald-700/40 bg-emerald-50 dark:bg-emerald-950/30 p-4">
@@ -121,17 +108,24 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
       {/* Parsed records */}
       {parsed.length > 0 && (
         <section>
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            <h2 className="text-base font-semibold text-slate-800 dark:text-white">
-              Successfully Parsed
-              <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">({totalParsed.toLocaleString()} records)</span>
-            </h2>
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              <h2 className="text-base font-semibold text-slate-800 dark:text-white">
+                Successfully Parsed
+                <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">({totalParsed.toLocaleString()} records)</span>
+              </h2>
+            </div>
+            {/* P3: Download parsed CSV */}
+            <button
+              onClick={() => downloadParsedCsv(parsed)}
+              className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Download Results CSV
+            </button>
           </div>
-          <DataTable
-            headers={activeFields.map((f) => FIELD_LABELS[f])}
-            rows={parsedRows}
-          />
+          <DataTable headers={activeFields.map((f) => FIELD_LABELS[f])} rows={parsedRows} />
         </section>
       )}
 
@@ -146,20 +140,29 @@ export default function ResultsTable({ result, onReset, onRetrySkipped }: Result
                 <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">({totalSkipped.toLocaleString()} records)</span>
               </h2>
             </div>
-
-            {/* F11 Bonus: Retry failed/skipped rows in UI */}
-            {onRetrySkipped && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* P3: Download skipped CSV */}
               <button
-                onClick={() => onRetrySkipped(skipped)}
-                className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                onClick={() => downloadSkippedCsv(skipped)}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all"
               >
-                <Play className="h-3 w-3 fill-current" />
-                Retry Failed Rows
+                <Download className="h-3.5 w-3.5" />
+                Download Skipped CSV
               </button>
-            )}
+              {/* Retry failed rows */}
+              {onRetrySkipped && (
+                <button
+                  onClick={() => onRetrySkipped(skipped)}
+                  className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                >
+                  <Play className="h-3 w-3 fill-current" />
+                  Retry Failed Rows
+                </button>
+              )}
+            </div>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-            These rows were skipped due to missing email/mobile contacts, validation rules, or API key issues.
+            These rows were skipped due to missing email/mobile contacts, validation rules, or AI processing issues.
           </p>
           <DataTable headers={skippedHeaders} rows={skippedRows} />
         </section>

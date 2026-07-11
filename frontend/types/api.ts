@@ -13,6 +13,8 @@ export interface ImportResponse {
   skipped: SkippedRecord[];
   totalParsed: number;
   totalSkipped: number;
+  /** True when the result was served from the backend in-memory cache (no AI call made). */
+  cached?: boolean;
 }
 
 /** Shape of error responses from the backend. */
